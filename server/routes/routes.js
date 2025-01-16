@@ -77,4 +77,16 @@ router.post('/users', auth, checkPermission('settings', 'edit'), async (req, res
     }
 });
 
+// נתיבי לקוחות
+router.use('/customers', require('./customer.routes'));
+
+// נתיבי פוליסות
+router.use('/policies', require('./policy.routes'));
+
+// נתיבי התראות
+router.use('/alerts', require('./alert.routes'));
+
+// נתיבי הגדרות
+router.use('/settings', require('./settings.routes'));
+
 module.exports = router;
