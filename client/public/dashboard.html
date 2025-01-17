@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לוח מחוונים - אודי פינטו סוכנות לביטוח</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- שורת סטטיסטיקות -->
+        <div class="row g-4 mb-4">
+            <!-- לקוחות -->
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-muted mb-0">סה"כ לקוחות</h6>
+                                <h2 id="totalCustomers" class="mt-2 mb-0">0</h2>
+                                <small id="customersTrend" class="text-success"></small>
+                            </div>
+                            <div class="icon-bg bg-primary-light">
+                                <i class="fas fa-users fa-2x text-primary"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- פוליסות -->
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-muted mb-0">סה"כ פוליסות</h6>
+                                <h2 id="totalPolicies" class="mt-2 mb-0">0</h2>
+                                <small id="policiesTrend" class="text-success"></small>
+                            </div>
+                            <div class="icon-bg bg-success-light">
+                                <i class="fas fa-file-contract fa-2x text-success"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- התראות פעילות -->
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-muted mb-0">התראות פעילות</h6>
+                                <h2 id="activeAlerts" class="mt-2 mb-0">0</h2>
+                                <small id="alertsTrend" class="text-danger"></small>
+                            </div>
+                            <div class="icon-bg bg-warning-light">
+                                <i class="fas fa-bell fa-2x text-warning"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- הכנסות חודשיות -->
+            <div class="col-md-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-muted mb-0">הכנסות חודשיות</h6>
+                                <h2 id="monthlyRevenue" class="mt-2 mb-0">₪0</h2>
+                                <small id="revenueTrend" class="text-success"></small>
+                            </div>
+                            <div class="icon-bg bg-info-light">
+                                <i class="fas fa-shekel-sign fa-2x text-info"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- גרף הכנסות -->
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">הכנסות לאורך זמן</h5>
+                        <canvas id="revenueChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- התפלגות פוליסות -->
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">התפלגות פוליסות</h5>
+                        <canvas id="policiesChart" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-4">
+            <!-- התראות דחופות -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-warning-light">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                            התראות דחופות
+                        </h5>
+                    </div>
+                    <div class="card-body" id="urgentAlerts">
+                        <p class="text-muted">טוען התראות...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- פוליסות שעומדות להסתיים -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-info-light">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-clock text-info me-2"></i>
+                            פוליסות שעומדות להסתיים
+                        </h5>
+                    </div>
+                    <div class="card-body" id="expiringPolicies">
+                        <p class="text-muted">טוען פוליסות...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- התפלגות לקוחות -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">התפלגות לקוחות לפי ערים</h5>
+                        <canvas id="customerDistributionChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
