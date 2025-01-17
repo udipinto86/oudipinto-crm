@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול התראות - אודי פינטו סוכנות לביטוח</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- כלי סינון -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <select class="form-select" id="priorityFilter">
+                            <option value="all">כל רמות הדחיפות</option>
+                            <option value="low">נמוכה</option>
+                            <option value="medium">בינונית</option>
+                            <option value="high">גבוהה</option>
+                            <option value="urgent">דחופה</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter">
+                            <option value="all">כל הסטטוסים</option>
+                            <option value="pending">ממתין</option>
+                            <option value="in_progress">בטיפול</option>
+                            <option value="handled">טופל</option>
+                            <option value="ignored">נדחה</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <button class="btn btn-success" id="markAllReadBtn">
+                            <i class="fas fa-check-double me-2"></i>
+                            סמן הכל כנקרא
+                        </button>
+                        <button class="btn btn-primary" id="addAlertBtn" data-permission="alerts:create">
+                            <i class="fas fa-plus me-2"></i>
+                            התראה חדשה
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- טבלת התראות -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="alertsTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>התראה</th>
+                                <th>תוכן</th>
+                                <th>תאריכים</th>
+                                <th>סטטוס</th>
+                                <th>פעולות</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל הוספת/עריכת התראה -->
+    <div class="modal fade" id="alertModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="alertModalTitle">הוספת התראה חדשה</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="alertForm">
+                        <!-- פרטי התראה -->
+                        <div class="mb-3">
+                            <label class="form-label">סוג התראה</label>
+                            <select class="form-select" 
+                                    name="type"
+                                    required
+                                    data-label="סוג התראה">
+                                <option value="policy_expiring">פוליסה מסתיימת</option>
+                                <option value="policy_renewal">חידוש פוליסה</option>
+                                <option value="customer_birthday">יום הולדת לקוח</option>
+                                <option value="payment_due">תשלום צפוי</option>
+                                <option value="commission_payment">תשלום עמלה</option>
+                                <option value="document_expiring">מסמך מסתיים</option>
+                                <option value="task_reminder">תזכורת משימה</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">כותרת</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="title"
+                                   required
+                                   data-label="כותרת">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">תוכן</label>
+                            <textarea class="form-control" 
+                                      name="message" 
+                                      rows="3"
+                                      required
+                                      data-label="תוכן"></textarea>
+                        </div>
+
+                        <!-- דחיפות ותאריך -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">דחיפות</label>
+                                <select class="form-select" 
+                                        name="priority"
+                                        required
+                                        data-label="דחיפות">
+                                    <option value="low">נמוכה</option>
+                                    <option value="medium">בינונית</option>
+                                    <option value="high">גבוהה</option>
+                                    <option value="urgent">דחופה</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">תאריך יעד</label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       name="dueDate"
+                                       required
+                                       data-label="תאריך יעד">
+                            </div>
+                        </div>
+
+                        <!-- קישור לישות -->
+                        <div class="mb-3">
+                            <label class="form-label">קשור ל-</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <select class="form-select" name="relatedTo.customer">
+                                        <option value="">בחר לקוח...</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select" name="relatedTo.policy">
+                                        <option value="">בחר פוליסה...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('alertForm').requestSubmit()">
+                        שמור
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל פרטי התראה -->
+    <div class="modal fade" id="alertDetailsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">פרטי התראה</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="alertDetailsContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
