@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול לקוחות - אודי פינטו סוכנות לביטוח</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- כלי סינון וחיפוש -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="customerSearch" 
+                                   placeholder="חיפוש לקוח...">
+                        </div>
+                    </div>
+                    <div class="col-md-8 text-md-end">
+                        <button class="btn btn-primary" id="addCustomerBtn" data-permission="customers:create">
+                            <i class="fas fa-plus me-2"></i>
+                            לקוח חדש
+                        </button>
+                        <button class="btn btn-outline-secondary" id="exportCustomersBtn">
+                            <i class="fas fa-file-export me-2"></i>
+                            ייצוא לאקסל
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- טבלת לקוחות -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="customersTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>שם לקוח ות.ז.</th>
+                                <th>פרטי קשר</th>
+                                <th>כתובת</th>
+                                <th>פעולות</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל הוספה/עריכת לקוח -->
+    <div class="modal fade" id="customerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customerModalTitle">הוספת לקוח חדש</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="customerForm">
+                        <!-- פרטים אישיים -->
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">שם מלא</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="name" 
+                                       required
+                                       data-label="שם מלא">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">ת.ז.</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="idNumber"
+                                       required
+                                       pattern="[0-9]{9}"
+                                       data-label="תעודת זהות">
+                            </div>
+                        </div>
+
+                        <!-- פרטי קשר -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">טלפון נייד</label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       name="mobile"
+                                       required
+                                       data-label="טלפון נייד">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">טלפון נוסף</label>
+                                <input type="tel" 
+                                       class="form-control" 
+                                       name="phone">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">אימייל</label>
+                            <input type="email" 
+                                   class="form-control" 
+                                   name="email"
+                                   required
+                                   data-label="אימייל">
+                        </div>
+
+                        <!-- כתובת -->
+                        <div class="row mb-3">
+                            <div class="col-md-8">
+                                <label class="form-label">רחוב ומספר</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="street">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">עיר</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="city"
+                                       required
+                                       data-label="עיר">
+                            </div>
+                        </div>
+
+                        <!-- הערות -->
+                        <div class="mb-3">
+                            <label class="form-label">הערות</label>
+                            <textarea class="form-control" 
+                                      name="notes" 
+                                      rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('customerForm').requestSubmit()">
+                        שמור
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל פרטי לקוח -->
+    <div class="modal fade" id="customerDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">פרטי לקוח</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="customerDetails"></div>
+                    
+                    <!-- טבלת פוליסות של הלקוח -->
+                    <h6 class="mt-4 mb-3">פוליסות</h6>
+                    <div class="table-responsive">
+                        <table id="customerPoliciesTable" class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>מספר פוליסה</th>
+                                    <th>סוג</th>
+                                    <th>חברה</th>
+                                    <th>סטטוס</th>
+                                    <th>תאריך סיום</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
