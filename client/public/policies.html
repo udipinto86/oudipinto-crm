@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול פוליסות - אודי פינטו סוכנות לביטוח</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- כלי סינון וחיפוש -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-3">
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="policySearch" 
+                                   placeholder="חיפוש פוליסה...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select" id="statusFilter">
+                            <option value="all">כל הסטטוסים</option>
+                            <option value="active">פעיל</option>
+                            <option value="pending">ממתין</option>
+                            <option value="cancelled">מבוטל</option>
+                            <option value="expired">פג תוקף</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <button class="btn btn-primary" id="addPolicyBtn" data-permission="policies:create">
+                            <i class="fas fa-plus me-2"></i>
+                            פוליסה חדשה
+                        </button>
+                        <button class="btn btn-outline-secondary" id="exportPoliciesBtn">
+                            <i class="fas fa-file-export me-2"></i>
+                            ייצוא לאקסל
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- טבלת פוליסות -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="policiesTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>מספר פוליסה</th>
+                                <th>לקוח</th>
+                                <th>חברת ביטוח</th>
+                                <th>תקופה</th>
+                                <th>פרמיה</th>
+                                <th>סטטוס</th>
+                                <th>פעולות</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל הוספה/עריכת פוליסה -->
+    <div class="modal fade" id="policyModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="policyModalTitle">הוספת פוליסה חדשה</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="policyForm">
+                        <!-- פרטי פוליסה -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">מספר פוליסה</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="policyNumber" 
+                                       required
+                                       data-label="מספר פוליסה">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">לקוח</label>
+                                <select class="form-select" 
+                                        name="customerId"
+                                        required
+                                        data-label="לקוח"></select>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">סוג פוליסה</label>
+                                <select class="form-select" 
+                                        name="type"
+                                        required
+                                        data-label="סוג פוליסה">
+                                    <option value="car_mandatory">ביטוח חובה</option>
+                                    <option value="car_comprehensive">ביטוח מקיף</option>
+                                    <option value="health">ביטוח בריאות</option>
+                                    <option value="life">ביטוח חיים</option>
+                                    <option value="pension">פנסיה</option>
+                                    <option value="home">ביטוח דירה</option>
+                                    <option value="business">ביטוח עסק</option>
+                                    <option value="longterm_care">ביטוח סיעודי</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">חברת ביטוח</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       name="company"
+                                       required
+                                       data-label="חברת ביטוח">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">מחלקה</label>
+                                <select class="form-select" 
+                                        name="department"
+                                        required
+                                        data-label="מחלקה">
+                                    <option value="elementary">אלמנטרי</option>
+                                    <option value="pension">פנסיוני</option>
+                                    <option value="health">בריאות</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- תקופה ותשלומים -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">תאריך התחלה</label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       name="startDate"
+                                       required
+                                       data-label="תאריך התחלה">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">תאריך סיום</label>
+                                <input type="date" 
+                                       class="form-control" 
+                                       name="endDate"
+                                       required
+                                       data-label="תאריך סיום">
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">סכום פרמיה</label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       name="price.amount"
+                                       required
+                                       min="0"
+                                       step="0.01"
+                                       data-label="סכום פרמיה">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">מטבע</label>
+                                <select class="form-select" 
+                                        name="price.currency">
+                                    <option value="ILS">₪</option>
+                                    <option value="USD">$</option>
+                                    <option value="EUR">€</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">תדירות תשלום</label>
+                                <select class="form-select" 
+                                        name="price.paymentFrequency">
+                                    <option value="monthly">חודשי</option>
+                                    <option value="quarterly">רבעוני</option>
+                                    <option value="annual">שנתי</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- סטטוס -->
+                        <div class="mb-3">
+                            <label class="form-label">סטטוס</label>
+                            <select class="form-select" 
+                                    name="status"
+                                    required
+                                    data-label="סטטוס">
+                                <option value="active">פעיל</option>
+                                <option value="pending">ממתין</option>
+                                <option value="cancelled">מבוטל</option>
+                                <option value="expired">פג תוקף</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ביטול</button>
+                    <button type="button" class="btn btn-primary" onclick="document.getElementById('policyForm').requestSubmit()">
+                        שמור
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- מודל פרטי פוליסה -->
+    <div class="modal fade" id="policyDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">פרטי פוליסה</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="policyDetailsContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
